@@ -12,7 +12,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const moment = require('moment');
 const router = express.Router();
-const { validateMissionCreation, validateMissionUpdate } = require('../middleware/validation');
+const { validateFields } = require('../middleware/validation');
 
 // MISSION-04: Mission System - Doesn't access device sensors, breaks goals into daily checkpoints
 const dbPath = process.env.DB_PATH || path.join(__dirname, '../../taskmate.db');
@@ -43,7 +43,7 @@ db.serialize(() => {
 });
 
 // MISSION-04: Create a new mission
-router.post('/', validateMissionCreation, async (req, res) => {
+router.post('/', validateFields(['title', 'goal']), async (req, res) => {
   try {
     const { title, description, goal, durationDays = 7 } = req.body;
 
@@ -109,7 +109,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Complete a checkpoint
-router.put('/:missionId/checkpoints/:checkpointId/complete', validateMissionUpdate, (req, res) => {
+router.put('/:missionId/checkpoints/:checkpointId/complete', validateFields([]), (req, res) => {
   const { missionId, checkpointId } = req.params;
   
   db.run(
@@ -129,7 +129,7 @@ router.put('/:missionId/checkpoints/:checkpointId/complete', validateMissionUpda
 });
 
 // Complete a mission
-router.put('/:id/complete', validateMissionUpdate, (req, res) => {
+router.put('/:id/complete', validateFields([]), (req, res) => {
   const { id } = req.params;
   
   db.run(

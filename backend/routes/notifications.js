@@ -13,7 +13,7 @@ const path = require('path');
 const moment = require('moment');
 const cron = require('node-cron');
 const router = express.Router();
-const { handleValidationErrors } = require('../middleware/validation');
+const { validateFields } = require('../middleware/validation');
 
 // NOTIFY-03: Notification Engine - Isolated from UI components, only sends notifications
 const dbPath = process.env.DB_PATH || path.join(__dirname, '../../taskmate.db');
@@ -93,7 +93,7 @@ router.post('/check', async (req, res) => {
 });
 
 // Dismiss notification
-router.put('/:id/dismiss', handleValidationErrors, async (req, res) => {
+router.put('/:id/dismiss', validateFields([]), async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -118,7 +118,7 @@ router.put('/:id/dismiss', handleValidationErrors, async (req, res) => {
 });
 
 // Toggle notifications
-router.put('/settings/toggle', handleValidationErrors, async (req, res) => {
+router.put('/settings/toggle', validateFields([]), async (req, res) => {
   try {
     const { enabled } = req.body;
     

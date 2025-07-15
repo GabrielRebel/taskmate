@@ -12,7 +12,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const moment = require('moment');
 const router = express.Router();
-const { validateTaskExtraction, validateTaskCompletion } = require('../middleware/validation');
+const { validateFields } = require('../middleware/validation');
 
 // TASK-02: Task Extraction - Never modifies chat history, only creates new tasks
 const dbPath = process.env.DB_PATH || path.join(__dirname, '../../taskmate.db');
@@ -32,7 +32,7 @@ db.serialize(() => {
 });
 
 // POST /extract: Extract tasks from a user message and save to database
-router.post('/extract', validateTaskExtraction, async (req, res) => {
+router.post('/extract', validateFields(['message']), async (req, res) => {
   try {
     const { message } = req.body;
 
@@ -92,7 +92,7 @@ router.get('/', (req, res) => {
 });
 
 // PUT /:id/complete: Mark a task as completed
-router.put('/:id/complete', validateTaskCompletion, (req, res) => {
+router.put('/:id/complete', validateFields([]), (req, res) => {
   const { id } = req.params;
   
   if (!id || isNaN(parseInt(id))) {
